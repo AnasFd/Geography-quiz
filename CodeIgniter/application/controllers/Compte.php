@@ -25,7 +25,7 @@ class Compte extends CI_Controller {
 
         $this->load->helper('form');
         $this->load->library('form_validation');
-        // $this->form_validation->set_rules('pseudo', 'Pseudo', 'required');
+
         $this->form_validation->set_rules(
             'pseudo', 'Pseudo',
             'required|max_length[20]|is_unique[t_user_usr.usr_pseudo]',
@@ -42,7 +42,11 @@ class Compte extends CI_Controller {
             $this->load->view('templates/bas');
         }
         else{
-            $this->db_model->set_compte();
+
+            $pseudo=html_escape($this->input->post('pseudo'));
+            $mdp=html_escape($this->input->post('mdp'));
+
+            $this->db_model->set_compte($pseudo,$mdp);
             $data['message']="Nouveau nombre de comptes : ";
             //appel de la fonction créée dans le précédent tutoriel :
             $data['acc_nb']=$this->db_model->get_acc_count();
@@ -78,11 +82,11 @@ class Compte extends CI_Controller {
         }
     }
     
-
-    
-        public function login_check($password,$username){
+    public function login_check($password,$username){
         if($password != NULL && $username != NULL){ //Si les deux champs sont remplis
-            if($this->db_model->connect_compte($username,$password)) //Si le couple exist dans la bd
+            $pwd = html_escape($password);
+            $usr = html_escape($username);
+            if($this->db_model->connect_compte($usr,$pwd)) //Si le couple exist dans la bd
                 return true;
             else{
                 $this->form_validation->set_message('login_check', 'Identifiants erronés ou inexistants !');

@@ -66,7 +66,7 @@ class Match extends CI_Controller {
 
 
         //match data
-        $mat_intitule = $this->input->post('mat_intitule');
+        $mat_intitule = html_escape($this->input->post('mat_intitule'));
         $this->form_validation->set_rules('mat_intitule', 'Intitule match', 'required');
         $mat_debut = $this->input->post('mat_debut');
         $this->form_validation->set_rules('mat_debut', 'Date début', 'required');
@@ -124,8 +124,8 @@ class Match extends CI_Controller {
     public function lister(){
 
         /**** Traitement des données ****/
-            $pla_pseudo = $this->input->post('pla_pseudo');
-            $mat_code = $this->input->post('mat_code');
+            $pla_pseudo = html_escape($this->input->post('pla_pseudo'));
+            $mat_code = html_escape($this->input->post('mat_code'));
             //mat id : pour recuperer le nombre de questions dans un quiz associé à un match
             $mat_id = $this->input->post('mat_id');
             //les réponses du joueur

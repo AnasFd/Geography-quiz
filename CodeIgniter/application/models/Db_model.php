@@ -38,9 +38,7 @@ class Db_model extends CI_Model {
         return $query->result_array();
     }
 
-    public function set_compte(){
-        $pseudo=$this->input->post('pseudo');
-        $mdp=$this->input->post('mdp');
+    public function set_compte($pseudo,$mdp){
         //adding salt to the password
         $salt = "IhaveChosenYouAsmyLordAndSavior!!34682__Test";
 
@@ -53,16 +51,13 @@ class Db_model extends CI_Model {
         return ($query);
     }
 
-    public function check_match(){
-        $mat_code = $this->input->post('mat_code');
+    public function check_match($mat_code){
         $sql = "select mat_intitule from t_match_mat join t_quiz_qui using(qui_id) where mat_code = '".$mat_code."';";
         $query = $this->db->query($sql);
         return $query->row();//here we return a row so we need to see if it's not null (like 1 actualite)
     }
 
-    public function check_pseudo(){
-        $pla_pseudo = $this->input->post('pla_pseudo');
-        $mat_code = $this->input->post('mat_code');
+    public function check_pseudo($pla_pseudo,$mat_code){
         $sql = "select pla_pseudo from t_player_pla join t_match_mat using(mat_id) where mat_code = '".$mat_code."' and pla_pseudo = '".$pla_pseudo."'; ";
         $query = $this->db->query($sql);
         return $query->row();

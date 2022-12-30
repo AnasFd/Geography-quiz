@@ -24,7 +24,7 @@ class Accueil extends CI_Controller {
             $this->load->view('templates/bas');
         }
         else{
-            $data['mat_code'] = htmlspecialchars(addslashes($this->input->post('mat_code')));
+            $data['mat_code'] = html_escape($this->input->post('mat_code'));
             // $data['que_ans'] = $this->db_model->get_que($mat_code);
             // $data['mat_qui'] = $this->db_model->get_mat_qui($mat_code);
             // $data['ans_que'] = $this->db_model->get_ans($mat_code);
@@ -35,14 +35,11 @@ class Accueil extends CI_Controller {
     }
 
     //function to check the length and existance of mat_code given in forum
-    public function match_check($str){
-        $mat_ok = $this->db_model->check_match();
+    public function match_check(){
+        $mat_code = html_escape($this->input->post('mat_code'));
+        $mat_ok = $this->db_model->check_match($mat_code);
 
-        if (strlen($str)!=8){
-            $this->form_validation->set_message('match_check', 'Code de match doit avoir 8 caractere');
-            return FALSE;
-        }
-        else if(!isset($mat_ok)){
+        if(!isset($mat_ok)){
             $this->form_validation->set_message('match_check', 'Code de match inexistant, veuillez saisir le code fourni par votre formateur !');
             return FALSE;
         }
@@ -52,7 +49,8 @@ class Accueil extends CI_Controller {
     }
 
     public function pseudo(){
-        $mat_code = $this->input->post('mat_code');
+        
+        $mat_code = html_escape($this->input->post('mat_code'));
         $data['mat_code'] = $mat_code;
         $this->form_validation->set_rules('pla_pseudo','Pseudo','required|max_length[11]|callback_pseudo_check['.$mat_code.']');
 
@@ -64,7 +62,7 @@ class Accueil extends CI_Controller {
         }
         else{
             $data['mat_info'] = $this->db_model->get_que_ans($mat_code);
-            $data['pla_pseudo'] = $this->input->post('pla_pseudo');
+            $data['pla_pseudo'] = html_escape($this->input->post('pla_pseudo'));
 
             $this->load->view('templates/haut');
             $this->load->view('match_lister',$data);
@@ -74,7 +72,6 @@ class Accueil extends CI_Controller {
     }
 
     public function pseudo_check($pla_pseudo,$mat_code){
-        $pseudo_in_match = $this->db_model->check_pseudo();
 
         if($pla_pseudo == NULL){
             $this->form_validation->set_message('pseudo_check', 'Vous devez fournir un Pseudo');
@@ -85,7 +82,13 @@ class Accueil extends CI_Controller {
             $this->form_validation->set_message('pseudo_check', 'Le Pseudo ne doit pas dépasser 20 caractères!');
             return FALSE;
         }
-        else if(isset($pseudo_in_match)){ //si le resultat n'est pas NULL donc il existe un pseudo associé à ce match
+
+        $pseudo = html_escape($this->input->post('pla_pseudo'));
+        // $code = html_escape($this->input->post('mat_code'));
+
+        $pseudo_in_match = $this->db_model->check_pseudo($pseudo,$mat_code);
+
+        if(isset($pseudo_in_match)){ //si le resultat n'est pas NULL donc il existe un pseudo associé à ce match
             $this->form_validation->set_message('pseudo_check', 'Le pseudo choisi est déjà utilisé, veuillez en choisir un autre !');
             return FALSE;
         }
